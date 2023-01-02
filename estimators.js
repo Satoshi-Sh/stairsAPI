@@ -14,7 +14,14 @@ function inCalories(floor){
     return (inSteps(floor) * (0.17 + 0.05)).toFixed(2)
 }
 
+function estimate(array){array.map((x)=>{
+    x.height  = inMeters(x.total_floors)
+    x.steps = inSteps(x.total_floors)
+    x.calories = inCalories(x.total_floors) 
+    return x
+    })
+    return array
+}
 
-exports.inMeters = inMeters
-exports.inCalories = inCalories
-exports.inSteps = inSteps
+
+exports.estimate = estimate

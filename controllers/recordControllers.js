@@ -1,59 +1,97 @@
 const User = require("../models/user")
 const Record = require("../models/record")
 const { query } = require("express")
-const {inSteps,inMeters,inCalories} =require('../estimators')
+const {estimate} =require('../estimators')
+const mongoose = require('mongoose')
 
 //filter by user
 exports.all_records = (req,res,next)=>{
-  Record.find()
-  .sort({createdAt:-1})
-  .exec(function(err,records){
-if (err){
+const id = mongoose.Types.ObjectId(res.locals.user._id)
+Record.aggregate([{ $match: {"user":id } },{$group:{
+  _id:null,
+  total_floors:{$sum:"$floor"}
+}}]).exec(function(err,records){
+  if (err){
     return next(err)
 }
-let total = 0;
-records.map((x)=>{total+= x.floor})
-console.log(`Floor:${total}`)
-console.log(`Height:${inMeters(total)} m`)
-console.log(`Steps:${inSteps(total)} steps`)
-console.log(`Calories: ${inCalories(total)} calories`)
-const height = inMeters(total)
-const steps = inSteps(total)
-const calories = inCalories(total)
-res.json({total,height,steps,calories})
-  })
+records = estimate(records)
+res.json(records)
+})
 }
 
 // monthly 
 exports.monthly_records = (req,res,next)=>{
-Record.aggregate([{$group:{
+const id = mongoose.Types.ObjectId(res.locals.user._id)
+Record.aggregate([{ $match: {"user":id } },{$sort:{date:1}},{$group:{
   _id:{
       year:{$year:"$date"},
       month:{$month:'$date'},
   },
-  total_floors_month:{$sum:"$floor"}
+  total_floors:{$sum:"$floor"}
 }}]).exec(function(err,records){
   if (err){
       return next(err)
   }
+records = estimate(records)
 res.json(records)
   })
 }
 
-// daily 
-exports.daily_records = (req,res,next)=>{
-  Record.aggregate([{$sort:{date:1}},{$group:{
+// weekly 
+exports.weekly_records = (req,res,next)=>{
+  const id = mongoose.Types.ObjectId(res.locals.user._id)
+  Record.aggregate([{ $match: {"user":id } },{$sort:{date:1}},{$group:{
     _id:{
-        year:{$year:{date:'$date',timezone: "America/Chicago"}},
-        month:{$month:{date:'$date',timezone: "America/Chicago"}},
-        day:{$dayOfMonth:{date:'$date',timezone: "America/Chicago"}}
+        year:{$year:{date:'$date'}},
+        week:{$week:{date:'$date'}}
     },
-    total_floors_day:{$sum:"$floor"}
+    total_floors:{$sum:"$floor"}
   }}]).exec(function(err,records){
     if (err){
         return next(err)
     }
+  records = estimate(records)
   res.json(records)
     })
+  }
+
+
+// daily 
+exports.daily_records = (req,res,next)=>{
+  const id = mongoose.Types.ObjectId(res.locals.user._id)
+  Record.aggregate([{ $match: {"user":id } },{$sort:{date:1}},{$group:{
+    _id:{
+        year:{$year:{date:'$date'}},
+        month:{$month:{date:'$date'}},
+        day:{$dayOfMonth:{date:'$date'}}
+    },
+    total_floors:{$sum:"$floor"}
+  }}]).exec(function(err,records){
+    if (err){
+        return next(err)
+    }
+  records = estimate(records)
+  res.json(records)
+    })
+  }
+
+
+  // create a new record 
+
+  exports.record = (req,res,next) =>{
+    console.log(req.body)
+    record = new Record({
+      floor: req.body.floor,
+      user: res.locals.user,
+      date: req.body.date
+    }).save((err)=>{
+      if (err){
+        return next(err)
+      }
+      res.json({
+        message:`Recorded ${req.body.floor} at ${req.body.date}`
+      })
+    })
+
   }
 
