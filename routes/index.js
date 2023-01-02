@@ -3,6 +3,6 @@ var router = express.Router();
 const recordController = require('../controllers/recordControllers')
 
 /* GET home page. */
-router.get('/', recordController.all_records);
+router.get('/', recordController.daily_records);
 
 module.exports = router;
