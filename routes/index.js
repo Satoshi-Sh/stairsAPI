@@ -1,9 +1,8 @@
 var express = require('express');
 var router = express.Router();
+const recordController = require('../controllers/recordControllers')
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  return res.send("Received a GET HTTP method");
-});
+router.get('/', recordController.all_records);
 
 module.exports = router;

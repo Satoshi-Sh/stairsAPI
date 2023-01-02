@@ -17,6 +17,16 @@ mongoose.Promise = global.Promise;
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
+// remove collections 
+async function clearCollections() {
+    const collections = db.collections;
+  
+    await Promise.all(Object.values(collections).map(async (collection) => {
+        await collection.deleteMany({}); // an empty mongodb selector object ({}) must be passed as the filter argument
+    }));
+  }
+
+
 var users = []
 var records = []
 
@@ -69,7 +79,12 @@ function createRecords(cb) {
         function(callback) {
             recordCreate(22 , users[0], "2022-12-30T14:48:00.000Z", callback);
           },
-         
+          function(callback) {
+            recordCreate(10 , users[0], "2022-12-30T12:48:00.000Z", callback);
+          },
+          function(callback) {
+            recordCreate(22 , users[0], "2023-01-01T14:48:00.000Z", callback);
+          },
         ],
         // optional callback
         cb);
@@ -77,18 +92,19 @@ function createRecords(cb) {
 
 
 async.series([
-    createUsers,
-    createRecords,
-],
-// Optional callback
-function(err, results) {
-    if (err) {
-        console.log('FINAL ERR: '+err);
-    }
-    else {
-        console.log('Items: '+records);
-        
-    }
-    // All done, disconnect from database
-    mongoose.connection.close();
-});
+        clearCollections,
+        createUsers,
+        createRecords,
+    ],
+    // Optional callback
+    function(err, results) {
+        if (err) {
+            console.log('FINAL ERR: '+err);
+        }
+        else {
+            console.log('Items: '+records);
+            
+        }
+        // All done, disconnect from database
+        mongoose.connection.close();
+    });
