@@ -3,6 +3,7 @@ var router = express.Router();
 const recordController = require('../controllers/recordControllers');
 const jwt = require('jsonwebtoken');
 
+
 /* GET stats */
 router.get('/', verifyToken,recordController.all_records);
 router.get('/daily',verifyToken,recordController.daily_records);

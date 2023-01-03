@@ -7,6 +7,9 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const connectDB = require('./mongoConnect')
 
+const compression = require("compression")
+const helmet = reuqire("helmet")
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
@@ -25,7 +28,16 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(cors())
+app.use(compression())
+app.use(helmet())
+
+// cors setting 
+const corsOption = {
+  origin:'https://satoshi-sh.github.io',
+  credentials:true,
+  optionSuccessStatus:200
+}
+app.use(cors(corsOption))
 
 app.use(bodyParser.urlencoded({extended:false}))
 app.use(bodyParser.json())
