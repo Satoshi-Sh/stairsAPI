@@ -33,7 +33,7 @@ app.use(helmet())
 
 // cors setting 
 const corsOption = {
-  origin:'https://satoshi-sh.github.io',
+  origin:['https://satoshi-sh.github.io','http://localhost:3000'],
   credentials:true,
   optionSuccessStatus:200
 }
