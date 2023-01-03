@@ -8,7 +8,7 @@ const cors = require('cors')
 const connectDB = require('./mongoConnect')
 
 const compression = require("compression")
-const helmet = reuqire("helmet")
+const helmet = require("helmet")
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
