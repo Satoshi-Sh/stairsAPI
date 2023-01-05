@@ -17,7 +17,7 @@ router.post('/record',verifyToken,recordController.record)
 // verify token 
 
 function verifyToken(req,res,next){
-    const auth=req.body['token']
+    const auth=req.body['token'] || reg.get("Authorization")
     if(typeof auth !=='undefined'){
         jwt.verify(auth,process.env.JWT,(err,authData)=>{
            if (err){
