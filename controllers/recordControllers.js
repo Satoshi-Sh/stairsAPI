@@ -22,7 +22,7 @@ res.json(records)
 // monthly 
 exports.monthly_records = (req,res,next)=>{
 const id = mongoose.Types.ObjectId(res.locals.user._id)
-Record.aggregate([{ $match: {"user":id } },{$sort:{'date.year':1,'date.month':1}},{$group:{
+Record.aggregate([{ $match: {"user":id } },{$sort:{date:1}},{$group:{
   _id:{
       year:{$year:"$date"},
       month:{$month:'$date'},
