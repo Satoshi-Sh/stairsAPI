@@ -22,13 +22,13 @@ res.json(records)
 // monthly 
 exports.monthly_records = (req,res,next)=>{
 const id = mongoose.Types.ObjectId(res.locals.user._id)
-Record.aggregate([{ $match: {"user":id } },{$sort:{date:1}},{$group:{
+Record.aggregate([{ $match: {"user":id } },{$group:{
   _id:{
       year:{$year:"$date"},
       month:{$month:'$date'},
   },
   total_floors:{$sum:"$floor"}
-}}]).exec(function(err,records){
+}},,{$sort:{date:1}}]).exec(function(err,records){
   if (err){
       return next(err)
   }
