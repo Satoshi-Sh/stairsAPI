@@ -10,7 +10,7 @@
 API was created with Express, to let the front page communicate with MongoDb to get stored data, hosted on Cyclic. 
 Passport.js was used to authenticate users. 
 
-[Frontend Repo](https://github.com/Satoshi-Sh/stairsAPI)
+[Frontend Repo](https://github.com/Satoshi-Sh/take-stairs)
 
 ### Teachnologies Used 
 - React
